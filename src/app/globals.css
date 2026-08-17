@@ -1,0 +1,39 @@
+@import "tailwindcss";
+
+/*
+ * Design tokens — estética "old money": cremas/hueso, verde botella,
+ * dorado envejecido como acento, negro carbón para texto. Solo light mode
+ * (a propósito: la identidad visual pide un único modo, sobrio y consistente).
+ */
+:root {
+  --color-cream: #f5f1e8;
+  --color-bone: #ede6d6;
+  --color-bottle: #2c3b2e;
+  --color-bottle-light: #3a4a3c;
+  --color-gold: #b8955a;
+  --color-gold-dark: #a6824a;
+  --color-charcoal: #1e1e1c;
+  --color-line: #ddd3bc;
+
+  --shadow-soft: 0 1px 2px rgba(30, 30, 28, 0.06), 0 2px 8px rgba(30, 30, 28, 0.04);
+}
+
+@theme inline {
+  --color-cream: var(--color-cream);
+  --color-bone: var(--color-bone);
+  --color-bottle: var(--color-bottle);
+  --color-bottle-light: var(--color-bottle-light);
+  --color-gold: var(--color-gold);
+  --color-gold-dark: var(--color-gold-dark);
+  --color-charcoal: var(--color-charcoal);
+  --color-line: var(--color-line);
+
+  --shadow-soft: var(--shadow-soft);
+
+  --font-serif: var(--font-fraunces);
+  --font-sans: var(--font-inter);
+}
+
+body {
+  font-family: var(--font-sans);
+}
