@@ -1,26 +1,39 @@
 @import "tailwindcss";
 
+/*
+ * Design tokens — estética "old money": cremas/hueso, verde botella,
+ * dorado envejecido como acento, negro carbón para texto. Solo light mode
+ * (a propósito: la identidad visual pide un único modo, sobrio y consistente).
+ */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --color-cream: #f5f1e8;
+  --color-bone: #ede6d6;
+  --color-bottle: #2c3b2e;
+  --color-bottle-light: #3a4a3c;
+  --color-gold: #b8955a;
+  --color-gold-dark: #a6824a;
+  --color-charcoal: #1e1e1c;
+  --color-line: #ddd3bc;
+
+  --shadow-soft: 0 1px 2px rgba(30, 30, 28, 0.06), 0 2px 8px rgba(30, 30, 28, 0.04);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  --color-cream: var(--color-cream);
+  --color-bone: var(--color-bone);
+  --color-bottle: var(--color-bottle);
+  --color-bottle-light: var(--color-bottle-light);
+  --color-gold: var(--color-gold);
+  --color-gold-dark: var(--color-gold-dark);
+  --color-charcoal: var(--color-charcoal);
+  --color-line: var(--color-line);
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --shadow-soft: var(--shadow-soft);
+
+  --font-serif: var(--font-fraunces);
+  --font-sans: var(--font-inter);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
 }
