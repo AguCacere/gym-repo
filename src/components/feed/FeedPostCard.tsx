@@ -1,55 +1,54 @@
 'use client';
 
-import { useState } from 'react';
+import Link from 'next/link';
 import { Heart, MessageCircle } from 'lucide-react';
 import { cn } from '@/lib/cn';
 import { Avatar, Card, CardContent, CardHeader } from '@/components/ui';
 import { formatRelativeTime } from '@/lib/format';
+import { useAppStore } from '@/lib/store';
 import type { FeedPost } from '@/types';
 
-// Client component porque el like es interactivo (toggle local). Cuando
-// conectemos el feed real (Fase 8), esto va a disparar un insert/delete
-// en post_likes vía Supabase en vez de solo actualizar estado local.
+// Lee el post en vivo del store por id (en vez de recibir todo el objeto
+// como prop estática) para que el like se mantenga sincronizado entre el
+// feed y la vista de detalle del post.
 export function FeedPostCard({ post }: { post: FeedPost }) {
-  const [liked, setLiked] = useState(post.likedByMe);
-  const [likesCount, setLikesCount] = useState(post.likesCount);
-
-  function toggleLike() {
-    setLiked((prev) => !prev);
-    setLikesCount((prev) => (liked ? prev - 1 : prev + 1));
-  }
+  const live = useAppStore((s) => s.feedPosts.find((p) => p.id === post.id)) ?? post;
+  const toggleLike = useAppStore((s) => s.toggleLike);
 
   return (
     <Card>
       <CardHeader className="flex-row items-center gap-3 pb-3">
-        <Avatar name={post.author.displayName} src={post.author.avatarUrl} size="sm" />
+        <Avatar name={live.author.displayName} src={live.author.avatarUrl} size="sm" />
         <div className="flex flex-col">
-          <p className="text-sm font-medium text-charcoal">{post.author.displayName}</p>
-          <p className="text-xs text-charcoal/50">{formatRelativeTime(post.createdAt)}</p>
+          <p className="text-sm font-medium text-charcoal">{live.author.displayName}</p>
+          <p className="text-xs text-charcoal/50">{formatRelativeTime(live.createdAt)}</p>
         </div>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
-        <div>
-          <p className="font-serif text-lg text-charcoal">{post.dayName}</p>
+        <Link href={`/feed/${live.id}`} className="flex flex-col gap-1">
+          <p className="font-serif text-lg text-charcoal">{live.dayName}</p>
           <p className="text-sm text-charcoal/60">
-            {post.exerciseCount} ejercicios · {post.totalVolumeKg.toLocaleString('es-AR')} kg de volumen
+            {live.exerciseCount} ejercicios · {live.totalVolumeKg.toLocaleString('es-AR')} kg de volumen
           </p>
-        </div>
+        </Link>
         <div className="flex items-center gap-5 border-t border-line pt-3">
           <button
-            onClick={toggleLike}
+            onClick={() => toggleLike(live.id)}
             className={cn(
               'flex items-center gap-1.5 text-sm transition-colors',
-              liked ? 'text-gold-dark' : 'text-charcoal/60 hover:text-charcoal'
+              live.likedByMe ? 'text-gold-dark' : 'text-charcoal/60 hover:text-charcoal'
             )}
           >
-            <Heart size={17} strokeWidth={1.5} fill={liked ? 'currentColor' : 'none'} />
-            {likesCount}
+            <Heart size={17} strokeWidth={1.5} fill={live.likedByMe ? 'currentColor' : 'none'} />
+            {live.likesCount}
           </button>
-          <div className="flex items-center gap-1.5 text-sm text-charcoal/60">
+          <Link
+            href={`/feed/${live.id}`}
+            className="flex items-center gap-1.5 text-sm text-charcoal/60 hover:text-charcoal"
+          >
             <MessageCircle size={17} strokeWidth={1.5} />
-            {post.commentsCount}
-          </div>
+            {live.comments.length}
+          </Link>
         </div>
       </CardContent>
     </Card>

@@ -1,8 +1,8 @@
-import type { FeedPost, Group, ProgressStats, Profile, Routine } from '@/types';
+import type { FeedPost, Group, ProgressStats, Profile, Routine, WorkoutLog } from '@/types';
 
-// Datos hardcodeados para poder navegar la app antes de tener auth y
-// queries reales a Supabase. Cada función acá se va a reemplazar por un
-// fetch a la base en las fases de Grupos/Rutinas/Feed.
+// Datos semilla para el store de Zustand. Sirven para poder navegar la app
+// antes de tener auth y queries reales a Supabase. Cada uno de estos se va
+// a reemplazar por un fetch a la base en las fases de Grupos/Rutinas/Feed.
 
 export const currentUser: Profile = {
   id: 'me',
@@ -18,7 +18,7 @@ const members: Profile[] = [
   { id: 'u4', username: 'sofi.lp', displayName: 'Sofía López', avatarUrl: null },
 ];
 
-export const mockGroup: Group = {
+export const seedGroup: Group = {
   id: 'g1',
   name: 'Fuerza & Disciplina',
   description: 'Grupo de entrenamiento de fuerza, 4 días por semana.',
@@ -31,7 +31,7 @@ export const mockGroup: Group = {
   ],
 };
 
-export const mockRoutine: Routine = {
+export const seedRoutine: Routine = {
   id: 'r1',
   name: 'Rutina de fuerza — 4 días',
   days: [
@@ -75,54 +75,148 @@ export const mockRoutine: Routine = {
   ],
 };
 
-export const mockFeedPosts: FeedPost[] = [
+function sets(exerciseName: string, count: number, reps: number, weightKg: number) {
+  return Array.from({ length: count }, (_, i) => ({
+    id: `${exerciseName}-${i}`,
+    exerciseName,
+    setNumber: i + 1,
+    reps,
+    weightKg,
+  }));
+}
+
+export const seedWorkoutLogs: WorkoutLog[] = [
   {
-    id: 'p1',
-    author: members[1],
-    createdAt: '2026-08-17T18:30:00Z',
+    id: 'wl1',
+    userId: members[1].id,
+    dayId: 'd1',
     dayName: 'Día 1 — Push',
-    exerciseCount: 4,
-    totalVolumeKg: 3120,
-    likesCount: 4,
-    commentsCount: 2,
-    likedByMe: true,
+    date: '2026-08-17T18:30:00Z',
+    sets: [
+      ...sets('Press banca', 4, 7, 80),
+      ...sets('Press militar', 3, 9, 40),
+      ...sets('Fondos en paralelas', 3, 11, 10),
+      ...sets('Elevaciones laterales', 3, 14, 8),
+    ],
   },
   {
-    id: 'p2',
-    author: members[2],
-    createdAt: '2026-08-17T14:05:00Z',
+    id: 'wl2',
+    userId: members[2].id,
+    dayId: 'd3',
     dayName: 'Día 3 — Legs',
-    exerciseCount: 3,
-    totalVolumeKg: 4580,
-    likesCount: 2,
-    commentsCount: 0,
-    likedByMe: false,
+    date: '2026-08-17T14:05:00Z',
+    sets: [
+      ...sets('Sentadilla', 4, 6, 120),
+      ...sets('Peso muerto rumano', 3, 9, 90),
+      ...sets('Zancadas', 3, 11, 20),
+    ],
   },
   {
-    id: 'p3',
-    author: currentUser,
-    createdAt: '2026-08-16T20:15:00Z',
+    id: 'wl3',
+    userId: currentUser.id,
+    dayId: 'd2',
     dayName: 'Día 2 — Pull',
-    exerciseCount: 3,
-    totalVolumeKg: 2760,
-    likesCount: 6,
-    commentsCount: 3,
-    likedByMe: false,
+    date: '2026-08-16T20:15:00Z',
+    sets: [
+      ...sets('Dominadas', 4, 8, 0),
+      ...sets('Remo con barra', 4, 9, 60),
+      ...sets('Curl de bíceps', 3, 11, 14),
+    ],
   },
   {
-    id: 'p4',
-    author: members[3],
-    createdAt: '2026-08-16T09:40:00Z',
+    id: 'wl4',
+    userId: members[3].id,
+    dayId: 'd4',
     dayName: 'Día 4 — Full Body',
-    exerciseCount: 3,
-    totalVolumeKg: 3890,
-    likesCount: 3,
-    commentsCount: 1,
-    likedByMe: false,
+    date: '2026-08-16T09:40:00Z',
+    sets: [
+      ...sets('Peso muerto', 3, 5, 140),
+      ...sets('Press inclinado', 3, 9, 50),
+      ...sets('Remo bajo', 3, 11, 55),
+    ],
   },
 ];
 
-export const mockProgressStats: ProgressStats = {
+function volumeOf(log: WorkoutLog) {
+  return log.sets.reduce((total, s) => total + s.reps * s.weightKg, 0);
+}
+
+function exerciseCountOf(log: WorkoutLog) {
+  return new Set(log.sets.map((s) => s.exerciseName)).size;
+}
+
+export const seedFeedPosts: FeedPost[] = [
+  {
+    id: 'p1',
+    workoutLogId: 'wl1',
+    author: members[1],
+    createdAt: seedWorkoutLogs[0].date,
+    dayName: seedWorkoutLogs[0].dayName,
+    exerciseCount: exerciseCountOf(seedWorkoutLogs[0]),
+    totalVolumeKg: volumeOf(seedWorkoutLogs[0]),
+    likesCount: 4,
+    likedByMe: true,
+    comments: [
+      {
+        id: 'c1',
+        author: members[2],
+        content: 'Con todo con el press banca 💪',
+        createdAt: '2026-08-17T19:00:00Z',
+      },
+      {
+        id: 'c2',
+        author: currentUser,
+        content: 'Buen ritmo esta semana',
+        createdAt: '2026-08-17T19:20:00Z',
+      },
+    ],
+  },
+  {
+    id: 'p2',
+    workoutLogId: 'wl2',
+    author: members[2],
+    createdAt: seedWorkoutLogs[1].date,
+    dayName: seedWorkoutLogs[1].dayName,
+    exerciseCount: exerciseCountOf(seedWorkoutLogs[1]),
+    totalVolumeKg: volumeOf(seedWorkoutLogs[1]),
+    likesCount: 2,
+    likedByMe: false,
+    comments: [],
+  },
+  {
+    id: 'p3',
+    workoutLogId: 'wl3',
+    author: currentUser,
+    createdAt: seedWorkoutLogs[2].date,
+    dayName: seedWorkoutLogs[2].dayName,
+    exerciseCount: exerciseCountOf(seedWorkoutLogs[2]),
+    totalVolumeKg: volumeOf(seedWorkoutLogs[2]),
+    likesCount: 6,
+    likedByMe: false,
+    comments: [
+      {
+        id: 'c3',
+        author: members[1],
+        content: '¡Vamos! ¿Cómo veniste de dominadas?',
+        createdAt: '2026-08-16T21:00:00Z',
+      },
+    ],
+  },
+  {
+    id: 'p4',
+    workoutLogId: 'wl4',
+    author: members[3],
+    createdAt: seedWorkoutLogs[3].date,
+    dayName: seedWorkoutLogs[3].dayName,
+    exerciseCount: exerciseCountOf(seedWorkoutLogs[3]),
+    totalVolumeKg: volumeOf(seedWorkoutLogs[3]),
+    likesCount: 3,
+    likedByMe: false,
+    comments: [],
+  },
+];
+
+export const seedProgressStats: ProgressStats = {
   workoutsThisWeek: 3,
   weeklyGoal: 4,
   currentStreakWeeks: 6,
