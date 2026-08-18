@@ -1,13 +1,11 @@
 import { Avatar, Card, CardContent } from '@/components/ui';
+import { PageHeader } from '@/components/layout/PageHeader';
 import { currentUser } from '@/lib/mock-data';
 
 export default function ProfilePage() {
   return (
     <div className="mx-auto flex w-full max-w-2xl flex-col gap-6 px-4 py-8">
-      <header className="flex flex-col gap-1">
-        <p className="text-xs uppercase tracking-[0.2em] text-gold-dark">Tu cuenta</p>
-        <h1 className="font-serif text-3xl text-charcoal">Perfil</h1>
-      </header>
+      <PageHeader eyebrow="Tu cuenta" title="Perfil" />
 
       <Card>
         <CardContent className="flex items-center gap-4 pt-6">

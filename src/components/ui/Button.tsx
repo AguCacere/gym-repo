@@ -20,23 +20,34 @@ const sizeClasses: Record<Size, string> = {
   md: 'px-5 py-2.5 text-sm',
 };
 
+// Clases del botón expuestas aparte para poder aplicarlas a elementos que
+// no son <button> (ej. next/link) y que necesitan verse igual. No usamos
+// el patrón asChild de Radix para evitar la dependencia extra.
+export function buttonVariants({
+  variant = 'primary',
+  size = 'md',
+  className,
+}: {
+  variant?: Variant;
+  size?: Size;
+  className?: string;
+} = {}) {
+  return cn(
+    'inline-flex items-center justify-center gap-2 rounded-sm border font-medium tracking-wide transition-colors',
+    'disabled:cursor-not-allowed disabled:opacity-40',
+    'focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-cream',
+    variantClasses[variant],
+    sizeClasses[size],
+    className
+  );
+}
+
 // Botón base del design system. Bordes rectos (rounded-sm), sin sombras
 // pesadas ni animaciones llamativas — coherente con la estética sobria.
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   ({ variant = 'primary', size = 'md', className, ...props }, ref) => {
     return (
-      <button
-        ref={ref}
-        className={cn(
-          'inline-flex items-center justify-center gap-2 rounded-sm border font-medium tracking-wide transition-colors',
-          'disabled:cursor-not-allowed disabled:opacity-40',
-          'focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-cream',
-          variantClasses[variant],
-          sizeClasses[size],
-          className
-        )}
-        {...props}
-      />
+      <button ref={ref} className={buttonVariants({ variant, size, className })} {...props} />
     );
   }
 );
