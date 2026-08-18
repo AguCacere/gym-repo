@@ -1,4 +1,4 @@
-import { clsx } from 'clsx';
+import { cn } from '@/lib/cn';
 
 type Size = 'sm' | 'md' | 'lg';
 
@@ -28,7 +28,7 @@ export function Avatar({ src, name, size = 'md', className }: AvatarProps) {
   if (!src) {
     return (
       <div
-        className={clsx(
+        className={cn(
           'flex shrink-0 items-center justify-center rounded-full border border-line bg-bottle font-serif font-medium text-cream',
           sizeClasses[size],
           className
@@ -44,7 +44,7 @@ export function Avatar({ src, name, size = 'md', className }: AvatarProps) {
     <img
       src={src}
       alt={name}
-      className={clsx(
+      className={cn(
         'shrink-0 rounded-full border border-line object-cover',
         sizeClasses[size],
         className

@@ -1,5 +1,5 @@
 import { InputHTMLAttributes, forwardRef, useId } from 'react';
-import { clsx } from 'clsx';
+import { cn } from '@/lib/cn';
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string;
@@ -23,7 +23,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         <input
           ref={ref}
           id={inputId}
-          className={clsx(
+          className={cn(
             'rounded-sm border bg-cream px-3.5 py-2.5 text-sm text-charcoal placeholder:text-charcoal/40',
             'focus:outline-none focus:ring-1 focus:ring-gold',
             error ? 'border-red-700/60' : 'border-line',
